@@ -39,3 +39,26 @@ select b.author,avg(r.rating),count(r.userid) from book b join ratings r on b.is
 create index idx8 on ratings (isbn asc,userid asc);
 //建立idx8完成後查詢
 select b.author,avg(r.rating),count(r.userid) from book b join ratings r on b.isbn=r.isbn group by b.author having count(r.userid)>10 order by avg(r.rating) desc;
+
+-- 2.分群彙總每本書的平均分數,查詢高於五分的書名
+SELECT book.title,AVG(RATING)
+FROM BOOK,RATINGS 
+WHERE BOOK.ISBN=RATINGS.ISBN 
+group by title
+HAVING AVG(RATING)>5;
+
+--強制使用book index
+SELECT /*+ index(BOOK (ISBN)) */ book.title,AVG(RATING)
+FROM BOOK,RATINGS 
+WHERE BOOK.ISBN=RATINGS.ISBN 
+group by title
+HAVING AVG(RATING)>5;
+
+---強制使用ratings index
+SELECT /*+ index(RATINGS (ISBN)) */ book.title,AVG(RATING)
+FROM BOOK,RATINGS 
+WHERE BOOK.ISBN=RATINGS.ISBN 
+group by title
+HAVING AVG(RATING)>5;
+
+
